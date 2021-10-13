@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Common from '../views/common/index.vue'
 import Login from '../views/admin/login/index.vue'
 import Admin from '../views/admin/index.vue'
+import A404 from '../components/404.vue'
 Vue.use(Router)
 
 const router = new Router({
@@ -26,6 +27,11 @@ const router = new Router({
             path: '/common',
             name: 'common',
             component: Common
+        },
+        {
+            path: '/404',
+            name: 'A404',
+            component: A404
         }
     ]
 })

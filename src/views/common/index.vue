@@ -83,25 +83,28 @@ export default {
         await this.init()
         await this.group()
         await this.suiji()
+        await this.kz()
     },
-    mounted() {
-        if (this.$route.query.value == '123' || localStorage.getItem(this.dateTime)) {
-            this.kongzhi = true
-        }
-    },
+    // mounted() {
+    //     if (this.$route.query.value == '123' || localStorage.getItem(this.dateTime)) {
+    //         this.kongzhi = true
+    //     }
+    // },
     methods: {
         //初始化获取文章数据
         async init() {
-            let params = {
-                "tableName": "article",
-                "selectColumns": ["article_time", "article_title", "article_value"],
-                "whereColumns": { "article_id": this.$route.query.key }
-            }
-            const { code, data } = await this.$API.select(params)
-            if (code == '00000') {
-                data[0].article_value = data[0].article_value.replace(/\n/g, "");
-                data[0].article_value = data[0].article_value.split(',')
-                this.sj = data[0]
+            if (this.$route.query.id) {
+                let params = {
+                    "tableName": "article",
+                    "selectColumns": ["article_time", "article_title", "article_value"],
+                    "whereColumns": { "article_id": this.$route.query.id }
+                }
+                const { code, data } = await this.$API.select(params)
+                if (code == '00000') {
+                    data[0].article_value = data[0].article_value.replace(/\n/g, "");
+                    data[0].article_value = data[0].article_value.split(',')
+                    this.sj = data[0]
+                }
             }
 
         },
