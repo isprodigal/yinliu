@@ -12,7 +12,7 @@ import store from './stort'
 import api from "../api/index.js";
 Vue.prototype.$API = api;
 
-import filters from "../utils/filters.js";
+import filters from "@utils/filters.js";
 Object.keys(filters).forEach(key => { Vue.filter(key, filters[key]); });
 
 new Vue({

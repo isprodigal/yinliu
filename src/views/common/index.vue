@@ -63,6 +63,7 @@
 </template>
 
 <script>
+import filters from "@utils/filters.js";
 export default {
     data: () => ({
         sj: {},
@@ -76,39 +77,26 @@ export default {
             qunSrc: "https://qm.qq.com/cgi-bin/qm/qr?k=fK1vDrtfGTNwO6h3Fmncfy_oX2zJLI02&jump_from=webapi",
             imgSrc: "https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/234fe5673f6343855906aca0f30b41e41abe85b50dac3b8b82b4e923157f255ed6026371ab50178b91e099a6f312fb27?pictype=scale&from=30113&version=3.3.3.3&uin=459332753&fname=QQ%E5%9B%BE%E7%89%8720210927200215.png&size=750"
         },
+        article_key: "",
         //控制隐藏内容
         kongzhi: false,
     }),
     async created() {
-        await this.init()
         await this.group()
         await this.suiji()
-        await this.kz()
     },
-    // mounted() {
-    //     if (this.$route.query.value == '123' || localStorage.getItem(this.dateTime)) {
-    //         this.kongzhi = true
-    //     }
-    // },
-    methods: {
-        //初始化获取文章数据
-        async init() {
-            if (this.$route.query.id) {
-                let params = {
-                    "tableName": "article",
-                    "selectColumns": ["article_time", "article_title", "article_value"],
-                    "whereColumns": { "article_id": this.$route.query.id }
-                }
-                const { code, data } = await this.$API.select(params)
-                if (code == '00000') {
-                    data[0].article_value = data[0].article_value.replace(/\n/g, "");
-                    data[0].article_value = data[0].article_value.split(',')
-                    this.sj = data[0]
-                }
+    mounted() {
+        if (localStorage.getItem('data')) {
+            if (JSON.parse(localStorage.getItem('data')) == filters(new Date(), 'YMD')) {
+                this.kongzhi = true
             }
-
-        },
-        //获取群链接等信息
+        }
+        if (this.$route.query.key == this.article_key) {
+            this.kongzhi = true
+        }
+    },
+    methods: {
+        //初始化获取文章数据获取群链接等信息
         async group() {
             let params = {
                 "beforeSql": "SELECT * from article  left join article_group on article.group_id=article_group.group_id",
@@ -118,7 +106,10 @@ export default {
             }
             let { code, data } = await this.$API.multiTableQuery(params)
             if (code == '00000') {
-                console.log(data);
+                data[0].article_value = data[0].article_value.replace(/\n/g, "");
+                data[0].article_value = data[0].article_value.split(',')
+                this.sj = data[0]
+                this.article_key = data[0].article_key
             }
         },
         //随机推荐
@@ -129,7 +120,7 @@ export default {
                     "*"
                 ],
                 "whereNoColumns": {
-                    "article_id": this.$route.query.key
+                    "article_id": this.$route.query.id
                 },
                 "size": 3
             }
@@ -138,19 +129,24 @@ export default {
                 this.suijiSj = data
             }
         },
-        //查看隐藏内容
-        ck() {
-            this.markShow = true
-        },
         //确定
         qdClick() {
             this.markShow = false
-            this.$router.push({ path: 'common', query: { value: '123' } })
+            this.$router.push({ path: 'common', query: { id: this.$route.query.id, key: this.$route.query.key } })
             setTimeout(() => {
-                localStorage.setItem(JSON.stringify(this.dateTime), JSON.stringify(this.dateTime))
+                localStorage.setItem('data', JSON.stringify(filters(new Date()), 'YMD'))
             }, 1);
             location.reload();
-        }
+        },
+        //查看隐藏内容
+        ck() {
+            this.markShow = true
+            if (mqq.support("mqq.ui.topicSend")) {
+                alert('支持')
+            } else {
+                alert('不支持')
+            }
+        },
     },
 };
 </script>
